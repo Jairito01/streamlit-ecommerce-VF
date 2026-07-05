@@ -38,59 +38,273 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+    /* ----------------------------------------------------------------
+       FONT — applied strictly to text elements to avoid breaking icons
+       ---------------------------------------------------------------- */
+    html, body,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stSidebar"],
+    p, li, label, td, th, input, textarea, select, option,
+    div[data-testid="stMarkdownContainer"],
+    div[data-testid="stText"] {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont,
+                     'Segoe UI', Roboto, sans-serif !important;
+    }
+
+    /* ----------------------------------------------------------------
+       TYPOGRAPHY — Editorial headers, not heavy/aggressive bold
+       ---------------------------------------------------------------- */
     .main-title {
-        font-size: 2.3rem;
-        font-weight: 800;
-        color: #12355B;
-        margin-bottom: 0.2rem;
+        font-size: 2.6rem;
+        font-weight: 500;
+        color: #22201F;
+        margin-bottom: 0.6rem;
+        letter-spacing: -0.04em;
+        line-height: 1.15;
     }
     .subtitle {
-        font-size: 1.02rem;
-        color: #4F5D75;
-        margin-bottom: 1.4rem;
+        font-size: 1.05rem;
+        color: #7E7973 !important;
+        margin-bottom: 3.5rem; /* Generous breathing room */
+        font-weight: 400;
+        line-height: 1.6;
     }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: #22201F !important;
+        font-weight: 500 !important;
+        letter-spacing: -0.025em !important;
+    }
+
+    /* ----------------------------------------------------------------
+       CARDS — Borderless, shadowless, relying on soft shade contrast
+       ---------------------------------------------------------------- */
     .step-card {
-        padding: 1rem 1.1rem;
-        border-radius: 16px;
-        border: 1px solid #E6EAF0;
-        background: #FFFFFF;
-        box-shadow: 0 2px 10px rgba(18,53,91,0.05);
-        margin-bottom: 0.8rem;
+        padding: 2.8rem 2.8rem 2.5rem !important; /* Generous breathing room */
+        border-radius: 16px !important;
+        border: none !important;
+        background-color: #FAF9F6 !important; /* Lighter soft cream */
+        box-shadow: none !important;
+        margin-bottom: 2rem !important;
     }
+    .step-card h3 {
+        color: #22201F !important;
+        font-size: 1.25rem !important;
+        margin-top: 0 !important;
+        margin-bottom: 1.2rem !important;
+        font-weight: 500 !important;
+    }
+    .step-card ol {
+        padding-left: 1.4rem;
+        margin-bottom: 1.2rem;
+    }
+    .step-card li {
+        color: #4A4642 !important;
+        margin-bottom: 0.5rem;
+        line-height: 1.65;
+    }
+    .step-card p {
+        color: #7E7973 !important;
+        margin-top: 1rem;
+    }
+
+    /* ----------------------------------------------------------------
+       ALERTS — Clean flat color blocks
+       ---------------------------------------------------------------- */
     .ok-box {
-        padding: 0.9rem 1rem;
-        border-radius: 12px;
-        background: #EAF7EF;
-        color: #174A2A;
-        border: 1px solid #B7E0C2;
+        padding: 1rem 1.4rem;
+        border-radius: 10px;
+        background-color: #EBF4ED;
+        color: #2B5738;
+        border: none;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
     }
     .warn-box {
-        padding: 0.9rem 1rem;
-        border-radius: 12px;
-        background: #FFF5DF;
-        color: #664A00;
-        border: 1px solid #FFE0A3;
+        padding: 1rem 1.4rem;
+        border-radius: 10px;
+        background-color: #FAF2E6;
+        color: #7A531A;
+        border: none;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
     }
     .small-note {
-        color: #5E6B78;
-        font-size: 0.9rem;
+        color: #7E7973 !important;
+        font-size: 0.88rem;
     }
+
+    /* ----------------------------------------------------------------
+       METRICS — Simple clean boxes, borderless
+       ---------------------------------------------------------------- */
     div[data-testid="stMetric"] {
-        background-color: #FFFFFF;
-        border: 1px solid #E6EAF0;
-        padding: 0.8rem;
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(18,53,91,0.04);
+        background-color: #FAF9F6 !important;
+        border: none !important;
+        padding: 1.4rem !important;
+        border-radius: 12px !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stMetricLabel"] {
+        font-size: 0.75rem !important;
+        color: #7E7973 !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
+    }
+    div[data-testid="stMetricValue"] {
+        font-size: 1.8rem !important;
+        font-weight: 500 !important;
+        color: #22201F !important;
+        letter-spacing: -0.03em !important;
+    }
+
+    /* ----------------------------------------------------------------
+       PRIMARY BUTTON — Flat terracotta pill (completely round, no shadow)
+       ---------------------------------------------------------------- */
+    div[data-testid="stButton"] button[kind="primary"],
+    button[data-testid="baseButton-primary"] {
+        background-color: #A64B2A !important;
+        color: #FAF9F6 !important;
+        border-radius: 9999px !important; /* Full pill */
+        border: none !important;
+        padding: 0.65rem 2.2rem !important;
+        font-weight: 500 !important;
+        font-size: 0.95rem !important;
+        letter-spacing: 0.02em !important;
+        transition: background-color 0.15s ease !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stButton"] button[kind="primary"]:hover,
+    button[data-testid="baseButton-primary"]:hover {
+        background-color: #8E3E20 !important;
+    }
+    div[data-testid="stButton"] button[kind="primary"]:active,
+    button[data-testid="baseButton-primary"]:active {
+        transform: scale(0.98) !important;
+    }
+
+    /* ----------------------------------------------------------------
+       SECONDARY / DEFAULT BUTTONS — Pill shape
+       ---------------------------------------------------------------- */
+    div[data-testid="stButton"] button:not([kind="primary"]),
+    button[data-testid="baseButton-secondary"] {
+        border-radius: 9999px !important; /* Full pill */
+        border: 1px solid #C8C2B8 !important;
+        background-color: transparent !important;
+        color: #22201F !important;
+        font-weight: 500 !important;
+        transition: border-color 0.15s ease, color 0.15s ease !important;
+    }
+    div[data-testid="stButton"] button:not([kind="primary"]):hover,
+    button[data-testid="baseButton-secondary"]:hover {
+        border-color: #A64B2A !important;
+        color: #A64B2A !important;
+    }
+
+    /* ----------------------------------------------------------------
+       TABS — Spacious tabs with subtle line accents
+       ---------------------------------------------------------------- */
+    button[role="tab"][aria-selected="true"] {
+        color: #A64B2A !important;
+        border-bottom: 2px solid #A64B2A !important;
+        font-weight: 500 !important;
+    }
+    button[role="tab"] {
+        color: #7E7973 !important;
+        font-weight: 500 !important;
+        font-size: 0.95rem !important;
+        border-bottom: 2px solid transparent !important;
+        transition: color 0.15s ease !important;
+        padding: 0.8rem 1.6rem !important; /* Generous spacing */
+        margin-right: 0.5rem !important;
+    }
+    button[role="tab"]:hover {
+        color: #22201F !important;
+    }
+
+    /* ----------------------------------------------------------------
+       DOWNLOAD BUTTON
+       ---------------------------------------------------------------- */
+    [data-testid="stDownloadButton"] button {
+        background-color: #FAF9F6 !important;
+        color: #22201F !important;
+        border: 1px solid #C8C2B8 !important;
+        border-radius: 9999px !important; /* Pill shape */
+        font-weight: 500 !important;
+        transition: border-color 0.15s ease, color 0.15s ease !important;
+        padding: 0.5rem 1.8rem !important;
+    }
+    /* ----------------------------------------------------------------
+       SETTINGS MODAL — Hide the theme picker dropdown safely
+       ---------------------------------------------------------------- */
+    div[role="dialog"] div[data-testid="stSelectbox"] {
+        display: none !important;
+    }
+
+    /* ----------------------------------------------------------------
+       FORCE WARM LIGHT THEME OVERRIDES — Prevents dark mode from breaking
+       the layout colors even if the OS defaults to dark or theme changes.
+       ---------------------------------------------------------------- */
+    [data-theme="dark"] [data-testid="stAppViewContainer"],
+    [data-theme="dark"] [data-testid="stHeader"] {
+        background-color: #F4F0EA !important;
+    }
+    [data-theme="dark"] section[data-testid="stSidebar"],
+    [data-theme="dark"] section[data-testid="stSidebar"] > div {
+        background-color: #EBE6DD !important;
+    }
+    [data-theme="dark"] p,
+    [data-theme="dark"] li,
+    [data-theme="dark"] label,
+    [data-theme="dark"] td,
+    [data-theme="dark"] th,
+    [data-theme="dark"] h1,
+    [data-theme="dark"] h2,
+    [data-theme="dark"] h3,
+    [data-theme="dark"] h4,
+    [data-theme="dark"] h5,
+    [data-theme="dark"] h6,
+    [data-theme="dark"] [data-testid="stMarkdownContainer"] p,
+    [data-theme="dark"] [data-testid="stText"],
+    [data-theme="dark"] [data-testid="stCaptionContainer"] p {
+        color: #22201F !important;
+        -webkit-text-fill-color: #22201F !important;
+    }
+    [data-theme="dark"] [data-testid="stSidebar"] p,
+    [data-theme="dark"] [data-testid="stSidebar"] label,
+    [data-theme="dark"] [data-testid="stSidebar"] small,
+    [data-theme="dark"] [data-testid="stSidebar"] .stCaption {
+        color: #22201F !important;
+        -webkit-text-fill-color: #22201F !important;
+    }
+    [data-theme="dark"] .step-card,
+    [data-theme="dark"] div[data-testid="stMetric"] {
+        background-color: #FAF9F6 !important;
+    }
+
+    /* ----------------------------------------------------------------
+       DEPLOY BUTTON — Hide the Deploy button in localhost
+       ---------------------------------------------------------------- */
+    .stDeployButton,
+    [data-testid="stHeaderDeployButton"],
+    button[data-testid="stHeaderDeployButton"] {
+        display: none !important;
     }
 </style>
 """, unsafe_allow_html=True)
+
+
 
 # -----------------------------
 # Utilidades generales
 # -----------------------------
 
 def fig_to_streamlit(fig):
+    fig.tight_layout()
     st.pyplot(fig, clear_figure=True)
+    plt.close(fig)
 
 
 def preparar_para_streamlit(df):
@@ -193,6 +407,7 @@ def normalize_loaded_columns(df_raw):
     return df
 
 
+@st.cache_data
 def clean_data(df_loaded):
     """Replica la limpieza principal del notebook de Colab."""
     log = []
@@ -328,6 +543,7 @@ def clean_data(df_loaded):
     return df_cat, df_num, df_cat_num, pd.DataFrame(outlier_info).T, log
 
 
+@st.cache_data
 def build_transformation(df_cat_num):
     df = df_cat_num.copy()
     df_cat = df.select_dtypes(exclude='number').copy()
@@ -358,6 +574,7 @@ def build_transformation(df_cat_num):
     return df_final_transformacion, columnas_cat_transformar, columnas_num_transformar
 
 
+@st.cache_data
 def run_kmeans(df_cat_num):
     df_model = df_cat_num.copy()
     df_productos = df_model.groupby('product_name').agg(
@@ -405,6 +622,7 @@ def run_kmeans(df_cat_num):
     return df_model, df_productos, cluster_resumen, metricas_df, sc_scaled
 
 
+@st.cache_data
 def build_time_series_and_xgboost(df_model, optimize=False):
     if not XGBOOST_OK:
         return None, None, None, None, "La librería xgboost no está instalada. Instale xgboost para ejecutar esta sección."
@@ -488,7 +706,7 @@ def build_time_series_and_xgboost(df_model, optimize=False):
             scoring='r2',
             n_iter=20,
             random_state=42,
-            n_jobs=-1
+            n_jobs=1
         )
         random_search.fit(X_train, y_train)
         best_params = random_search.best_params_
@@ -584,9 +802,7 @@ if st.button("🚀 Ejecutar análisis completo", type="primary", use_container_w
 
         st.success("Análisis completo ejecutado correctamente.")
         st.session_state['results'] = {
-            'df_loaded': df_loaded,
-            'df_cat': df_cat,
-            'df_num': df_num,
+            'len_df_loaded': len(df_loaded),
             'df_cat_num': df_cat_num,
             'outlier_info': outlier_info,
             'cleaning_log': cleaning_log,
@@ -612,10 +828,12 @@ if 'results' not in st.session_state:
     st.stop()
 
 r = st.session_state['results']
-df_loaded = r['df_loaded']
-df_cat = r['df_cat']
-df_num = r['df_num']
-df_cat_num = r['df_cat_num']
+len_df_loaded = r['len_df_loaded']
+df_cat_num = r['df_cat_num'].copy()
+for col in df_cat_num.select_dtypes(include='category').columns:
+    df_cat_num[col] = df_cat_num[col].cat.remove_unused_categories()
+df_cat = df_cat_num.select_dtypes(exclude='number')
+df_num = df_cat_num.select_dtypes(include='number')
 outlier_info = r['outlier_info']
 df_final_transformacion = r['df_final_transformacion']
 df_model = r['df_model']
@@ -631,7 +849,7 @@ xgb_error = r['xgb_error']
 # Métricas superiores
 st.subheader("Resumen general del procesamiento")
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("Filas archivo original", f"{len(df_loaded):,}")
+col1.metric("Filas archivo original", f"{len_df_loaded:,}")
 col2.metric("Filas base limpia", f"{len(df_cat_num):,}")
 col3.metric("Variables consolidadas", f"{df_cat_num.shape[1]:,}")
 col4.metric("Productos segmentados", f"{len(df_productos):,}")
@@ -642,16 +860,16 @@ with st.expander("Ver bitácora de limpieza"):
 
 # Tabs de resultados
 (tab_limpieza, tab_eda, tab_transformacion, tab_kmeans, tab_xgb, tab_descarga) = st.tabs([
-    "1. Limpieza de datos",
-    "2. EDA e insights",
-    "3. Transformación",
-    "4. K-Means",
-    "5. Serie de tiempo",
-    "6. Descargas"
+    "🧹 1. Limpieza de datos",
+    "📊 2. EDA e insights",
+    "🔄 3. Transformación",
+    "🤖 4. K-Means (Segmentación)",
+    "📈 5. Serie de tiempo (XGBoost)",
+    "📥 6. Descarga de resultados"
 ])
 
 with tab_limpieza:
-    st.header("1. Calidad y limpieza de datos")
+    st.header("🧹 1. Calidad y limpieza de datos")
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Nulos finales en variables categóricas**")
@@ -663,12 +881,12 @@ with tab_limpieza:
     st.markdown("**Tratamiento de outliers aplicado**")
     mostrar_dataframe(outlier_info, use_container_width=True)
 
-    fig, ax = plt.subplots(figsize=(10, 3))
+    fig, ax = plt.subplots(figsize=(8.5, 2.5), dpi=95)
     df_num['Sales'].plot.box(vert=False, ax=ax)
     ax.set_title('Boxplot de Sales')
     fig_to_streamlit(fig)
 
-    fig, ax = plt.subplots(figsize=(10, 3))
+    fig, ax = plt.subplots(figsize=(8.5, 2.5), dpi=95)
     df_num['Profit'].plot.box(vert=False, ax=ax)
     ax.set_title('Boxplot de Profit')
     fig_to_streamlit(fig)
@@ -678,31 +896,33 @@ with tab_limpieza:
         mostrar_dataframe(df_cat_num.head(50), use_container_width=True)
 
 with tab_eda:
-    st.header("2. Análisis exploratorio de datos")
+    st.header("📊 2. Análisis exploratorio de datos")
     colA, colB = st.columns(2)
     with colA:
         st.markdown("**Frecuencia de pedidos por Category**")
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(7, 3.6), dpi=95)
         df_cat['Category'].value_counts().plot(kind='bar', ax=ax)
         ax.set_title('Frecuencia de pedidos por Category')
         ax.set_xlabel('Category')
         ax.set_ylabel('Cantidad de registros')
-        ax.tick_params(axis='x', rotation=0)
+        ax.tick_params(axis='x', rotation=30)
+        plt.setp(ax.get_xticklabels(), ha='right')
         fig_to_streamlit(fig)
     with colB:
         st.markdown("**Frecuencia de pedidos por Segment**")
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(7, 3.6), dpi=95)
         df_cat['Segment'].value_counts().plot(kind='bar', ax=ax)
         ax.set_title('Frecuencia de pedidos por Segment')
         ax.set_xlabel('Segment')
         ax.set_ylabel('Cantidad de registros')
-        ax.tick_params(axis='x', rotation=0)
+        ax.tick_params(axis='x', rotation=30)
+        plt.setp(ax.get_xticklabels(), ha='right')
         fig_to_streamlit(fig)
 
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Histograma de Sales**")
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(6.5, 3.2), dpi=95)
         df_num['Sales'].plot.hist(bins=30, ax=ax)
         ax.set_title('Histograma de Sales')
         ax.set_xlabel('Sales')
@@ -710,7 +930,7 @@ with tab_eda:
         fig_to_streamlit(fig)
     with c2:
         st.markdown("**Histograma de Profit**")
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(6.5, 3.2), dpi=95)
         df_num['Profit'].plot.hist(bins=30, ax=ax)
         ax.set_title('Histograma de Profit')
         ax.set_xlabel('Profit')
@@ -719,16 +939,17 @@ with tab_eda:
 
     st.markdown("**Ventas y utilidad acumulada por Category**")
     ventas_utilidad_categoria = df_cat_num.groupby('Category')[['Sales', 'Profit']].sum().sort_values('Sales', ascending=False)
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(8.5, 4.2), dpi=95)
     ventas_utilidad_categoria.plot(kind='bar', ax=ax)
     ax.set_title('Ventas y utilidad por Category')
     ax.set_xlabel('Category')
     ax.set_ylabel('Monto acumulado')
-    ax.tick_params(axis='x', rotation=0)
+    ax.tick_params(axis='x', rotation=30)
+    plt.setp(ax.get_xticklabels(), ha='right')
     fig_to_streamlit(fig)
 
     st.markdown("**Relación entre Sales y Profit**")
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(8.5, 4.2), dpi=95)
     ax.scatter(df_cat_num['Sales'], df_cat_num['Profit'], alpha=0.5, s=30)
     ax.set_title('Gráfico de dispersión Sales vs Profit')
     ax.set_xlabel('Sales')
@@ -736,7 +957,7 @@ with tab_eda:
     fig_to_streamlit(fig)
 
     st.markdown("**Distribución de Profit por Category**")
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(8.5, 4.2), dpi=95)
     if sns is not None:
         sns.boxplot(data=df_cat_num, x='Category', y='Profit', hue='Category', legend=False, ax=ax)
     else:
@@ -744,11 +965,13 @@ with tab_eda:
     ax.set_title('Distribución de Profit por Category')
     ax.set_xlabel('Category')
     ax.set_ylabel('Profit')
+    ax.tick_params(axis='x', rotation=30)
+    plt.setp(ax.get_xticklabels(), ha='right')
     fig_to_streamlit(fig)
 
     st.markdown("**Matriz de correlación de variables numéricas**")
     matriz_correlacion = df_num[['Sales', 'Quantity', 'Discount', 'Profit']].corr()
-    fig, ax = plt.subplots(figsize=(9, 5))
+    fig, ax = plt.subplots(figsize=(7.5, 4.2), dpi=95)
     if sns is not None:
         sns.heatmap(matriz_correlacion, center=0, vmin=-1, vmax=1, linewidths=0.5, annot=True, ax=ax)
     else:
@@ -765,7 +988,7 @@ with tab_eda:
     df_temp = df_cat_num.copy()
     df_temp['order_date'] = pd.to_datetime(df_temp['order_date'], errors='coerce')
     ventas_mensuales = df_temp.groupby(pd.Grouper(key='order_date', freq='ME'))['Sales'].sum().dropna()
-    fig, ax = plt.subplots(figsize=(11, 4))
+    fig, ax = plt.subplots(figsize=(9.5, 3.5), dpi=95)
     ventas_mensuales.plot(ax=ax)
     ax.set_title('Evolución mensual de Sales')
     ax.set_xlabel('Fecha')
@@ -778,7 +1001,7 @@ with tab_eda:
         mostrar_dataframe(matriz_correlacion, use_container_width=True)
 
 with tab_transformacion:
-    st.header("3. Transformación de datos")
+    st.header("🔄 3. Transformación de datos")
     st.markdown("Se aplican variables dummy a las columnas categóricas seleccionadas y MinMaxScaler a Sales, Quantity y Discount, manteniendo Profit como variable objetivo.")
     col1, col2, col3 = st.columns(3)
     col1.metric("Columnas categóricas transformadas", len(r['columnas_cat_transformar']))
@@ -787,7 +1010,7 @@ with tab_transformacion:
     mostrar_dataframe(df_final_transformacion.head(50), use_container_width=True)
 
 with tab_kmeans:
-    st.header("4. Modelo K-Means: segmentación de productos")
+    st.header("🤖 4. Modelo K-Means: segmentación de productos")
     st.markdown("El modelo agrupa productos por **Frecuencia** de pedidos y **Volumen** vendido, usando tres clústeres: Alta, Media y Baja rotación.")
 
     col1, col2 = st.columns(2)
@@ -798,7 +1021,7 @@ with tab_kmeans:
         st.markdown("**Cantidad de productos por nivel de rotación**")
         mostrar_dataframe(df_productos['Nivel_Rotacion'].value_counts().to_frame('Cantidad'), use_container_width=True)
 
-    fig, ax = plt.subplots(figsize=(9, 5))
+    fig, ax = plt.subplots(figsize=(7.5, 4.2), dpi=95)
     for nivel, grupo in df_productos.groupby('Nivel_Rotacion'):
         ax.scatter(grupo['Frecuencia'], grupo['Volumen'], label=nivel, alpha=0.65)
     ax.set_title('Segmentación K-Means por Frecuencia y Volumen')
@@ -810,7 +1033,7 @@ with tab_kmeans:
     st.markdown("**Métricas para selección de K**")
     mostrar_dataframe(metricas_df, use_container_width=True)
 
-    fig, axes = plt.subplots(2, 2, figsize=(14, 8))
+    fig, axes = plt.subplots(2, 2, figsize=(11, 6.5), dpi=95)
     metricas_df['Codo'].plot(marker='o', ax=axes[0,0])
     axes[0,0].set_title('Método del Codo')
     axes[0,0].set_xlabel('K')
@@ -835,7 +1058,7 @@ with tab_kmeans:
         mostrar_dataframe(df_productos.sort_values(['Nivel_Rotacion', 'Frecuencia'], ascending=[True, False]), use_container_width=True)
 
 with tab_xgb:
-    st.header("5. Modelo de serie de tiempo y XGBoost")
+    st.header("📈 5. Modelo de serie de tiempo y XGBoost")
     if xgb_error:
         st.warning(xgb_error)
     else:
@@ -846,7 +1069,7 @@ with tab_xgb:
             st.json(best_params)
 
         st.markdown("**Serie diaria de Profit**")
-        fig, ax = plt.subplots(figsize=(11, 4))
+        fig, ax = plt.subplots(figsize=(9.5, 3.5), dpi=95)
         df_ts.plot(x='Fecha', y='Profit', ax=ax, legend=False)
         ax.set_title('Serie diaria de Profit')
         ax.set_xlabel('Fecha')
@@ -854,7 +1077,7 @@ with tab_xgb:
         fig_to_streamlit(fig)
 
         st.markdown("**Comparación de valores reales vs predicción XGBoost**")
-        fig, ax = plt.subplots(figsize=(11, 5))
+        fig, ax = plt.subplots(figsize=(9.5, 4.2), dpi=95)
         ax.plot(df_comparar['Fecha'], df_comparar['y_test_XGBoost'], label='Real')
         ax.plot(df_comparar['Fecha'], df_comparar['y_pred_XGBoost'], label='Predicción XGBoost')
         if 'y_pred_XGBoost_Opt' in df_comparar.columns:
@@ -872,7 +1095,7 @@ with tab_xgb:
             mostrar_dataframe(df_comparar, use_container_width=True)
 
 with tab_descarga:
-    st.header("6. Descarga de resultados")
+    st.header("📥 6. Descarga de resultados")
     sheets = {
         'base_limpia': df_cat_num,
         'transformacion': df_final_transformacion,
