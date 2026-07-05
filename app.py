@@ -93,6 +93,63 @@ def fig_to_streamlit(fig):
     st.pyplot(fig, clear_figure=True)
 
 
+def preparar_para_streamlit(df):
+    """Prepara una copia segura para st.dataframe.
+
+    Streamlit Cloud usa PyArrow para renderizar tablas. Cuando un DataFrame tiene
+    índices especiales, columnas categóricas/periodos o columnas con tipos mixtos,
+    puede aparecer pyarrow.lib.ArrowInvalid. Esta función solo afecta la COPIA que
+    se muestra en pantalla; no modifica los DataFrames usados para cálculos,
+    gráficos, modelos ni descargas.
+    """
+    if isinstance(df, pd.Series):
+        df_vista = df.to_frame()
+    else:
+        df_vista = df.copy()
+
+    # Evita problemas con índices tipo PeriodIndex, DatetimeIndex, CategoricalIndex, etc.
+    df_vista = df_vista.reset_index()
+
+    # PyArrow también puede fallar si los nombres de columnas no son strings.
+    df_vista.columns = [str(col) for col in df_vista.columns]
+
+    for col in df_vista.columns:
+        serie = df_vista[col]
+        try:
+            es_segura = (
+                pd.api.types.is_integer_dtype(serie)
+                or pd.api.types.is_float_dtype(serie)
+                or pd.api.types.is_bool_dtype(serie)
+            )
+            if not es_segura:
+                df_vista[col] = serie.astype(str).replace({
+                    "nan": "",
+                    "NaT": "",
+                    "None": "",
+                    "<NA>": ""
+                })
+        except Exception:
+            df_vista[col] = serie.astype(str).replace({
+                "nan": "",
+                "NaT": "",
+                "None": "",
+                "<NA>": ""
+            })
+
+    return df_vista
+
+
+def mostrar_dataframe(df, **kwargs):
+    try:
+        st.dataframe(preparar_para_streamlit(df), **kwargs)
+    except Exception:
+        # Último respaldo: convertir toda la tabla a texto para que la app nunca se caiga por visualización.
+        df_texto = pd.DataFrame(df).reset_index()
+        df_texto.columns = [str(col) for col in df_texto.columns]
+        df_texto = df_texto.astype(str).replace({"nan": "", "NaT": "", "None": "", "<NA>": ""})
+        st.dataframe(df_texto, **kwargs)
+
+
 def read_input_file(uploaded_file):
     name = uploaded_file.name.lower()
     if name.endswith(".csv"):
@@ -497,7 +554,7 @@ try:
     df_raw = read_input_file(uploaded_file)
     st.markdown('<div class="ok-box">Archivo cargado correctamente. Revise la vista previa y ejecute el análisis completo.</div>', unsafe_allow_html=True)
     st.subheader("Vista previa del archivo cargado")
-    st.dataframe(df_raw.head(10), use_container_width=True)
+    mostrar_dataframe(df_raw.head(10), use_container_width=True)
 except Exception as e:
     st.error(f"No se pudo leer el archivo: {e}")
     st.stop()
@@ -598,13 +655,13 @@ with tab_limpieza:
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Nulos finales en variables categóricas**")
-        st.dataframe(df_cat.isnull().sum().sort_values(ascending=False).to_frame("nulos"), use_container_width=True)
+        mostrar_dataframe(df_cat.isnull().sum().sort_values(ascending=False).to_frame("nulos"), use_container_width=True)
     with c2:
         st.markdown("**Nulos finales en variables numéricas**")
-        st.dataframe(df_num.isnull().sum().sort_values(ascending=False).to_frame("nulos"), use_container_width=True)
+        mostrar_dataframe(df_num.isnull().sum().sort_values(ascending=False).to_frame("nulos"), use_container_width=True)
 
     st.markdown("**Tratamiento de outliers aplicado**")
-    st.dataframe(outlier_info, use_container_width=True)
+    mostrar_dataframe(outlier_info, use_container_width=True)
 
     fig, ax = plt.subplots(figsize=(10, 3))
     df_num['Sales'].plot.box(vert=False, ax=ax)
@@ -618,7 +675,7 @@ with tab_limpieza:
 
     if mostrar_tablas:
         st.markdown("**Base limpia consolidada**")
-        st.dataframe(df_cat_num.head(50), use_container_width=True)
+        mostrar_dataframe(df_cat_num.head(50), use_container_width=True)
 
 with tab_eda:
     st.header("2. Análisis exploratorio de datos")
@@ -717,8 +774,8 @@ with tab_eda:
 
     if mostrar_tablas:
         st.markdown("**Tablas de apoyo del EDA**")
-        st.dataframe(ventas_utilidad_categoria, use_container_width=True)
-        st.dataframe(matriz_correlacion, use_container_width=True)
+        mostrar_dataframe(ventas_utilidad_categoria, use_container_width=True)
+        mostrar_dataframe(matriz_correlacion, use_container_width=True)
 
 with tab_transformacion:
     st.header("3. Transformación de datos")
@@ -727,7 +784,7 @@ with tab_transformacion:
     col1.metric("Columnas categóricas transformadas", len(r['columnas_cat_transformar']))
     col2.metric("Columnas numéricas escaladas", len(r['columnas_num_transformar']))
     col3.metric("Dimensión final", f"{df_final_transformacion.shape[0]} x {df_final_transformacion.shape[1]}")
-    st.dataframe(df_final_transformacion.head(50), use_container_width=True)
+    mostrar_dataframe(df_final_transformacion.head(50), use_container_width=True)
 
 with tab_kmeans:
     st.header("4. Modelo K-Means: segmentación de productos")
@@ -736,10 +793,10 @@ with tab_kmeans:
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("**Resumen por clúster**")
-        st.dataframe(cluster_resumen, use_container_width=True)
+        mostrar_dataframe(cluster_resumen, use_container_width=True)
     with col2:
         st.markdown("**Cantidad de productos por nivel de rotación**")
-        st.dataframe(df_productos['Nivel_Rotacion'].value_counts().to_frame('Cantidad'), use_container_width=True)
+        mostrar_dataframe(df_productos['Nivel_Rotacion'].value_counts().to_frame('Cantidad'), use_container_width=True)
 
     fig, ax = plt.subplots(figsize=(9, 5))
     for nivel, grupo in df_productos.groupby('Nivel_Rotacion'):
@@ -751,7 +808,7 @@ with tab_kmeans:
     fig_to_streamlit(fig)
 
     st.markdown("**Métricas para selección de K**")
-    st.dataframe(metricas_df, use_container_width=True)
+    mostrar_dataframe(metricas_df, use_container_width=True)
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 8))
     metricas_df['Codo'].plot(marker='o', ax=axes[0,0])
@@ -775,7 +832,7 @@ with tab_kmeans:
 
     if mostrar_tablas:
         st.markdown("**Productos clasificados**")
-        st.dataframe(df_productos.sort_values(['Nivel_Rotacion', 'Frecuencia'], ascending=[True, False]), use_container_width=True)
+        mostrar_dataframe(df_productos.sort_values(['Nivel_Rotacion', 'Frecuencia'], ascending=[True, False]), use_container_width=True)
 
 with tab_xgb:
     st.header("5. Modelo de serie de tiempo y XGBoost")
@@ -783,7 +840,7 @@ with tab_xgb:
         st.warning(xgb_error)
     else:
         st.markdown("El modelo predictivo usa la serie diaria de Profit y variables derivadas de volumen, descuento y calendario.")
-        st.dataframe(xgb_results, use_container_width=True)
+        mostrar_dataframe(xgb_results, use_container_width=True)
         if best_params is not None:
             st.markdown("**Mejores parámetros encontrados en optimización**")
             st.json(best_params)
@@ -810,9 +867,9 @@ with tab_xgb:
 
         if mostrar_tablas:
             st.markdown("**Dataset diario para modelamiento**")
-            st.dataframe(df_ts.head(100), use_container_width=True)
+            mostrar_dataframe(df_ts.head(100), use_container_width=True)
             st.markdown("**Tabla real vs predicción**")
-            st.dataframe(df_comparar, use_container_width=True)
+            mostrar_dataframe(df_comparar, use_container_width=True)
 
 with tab_descarga:
     st.header("6. Descarga de resultados")

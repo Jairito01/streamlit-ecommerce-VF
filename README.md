@@ -55,3 +55,8 @@ El archivo cargado debe contener las 20 columnas originales del dataset:
 - Quantity
 - Discount
 - Profit
+
+
+## Corrección v2
+
+Se agregó una función de visualización robusta para evitar errores `pyarrow.lib.ArrowInvalid` en todas las secciones de tablas de Streamlit Cloud. Esta corrección no modifica los cálculos ni los modelos; solo prepara copias seguras para mostrar en pantalla.
